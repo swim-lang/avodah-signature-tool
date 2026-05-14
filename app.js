@@ -249,9 +249,7 @@ function getSignatureHtml() {
   const infoCell = cells[1];
   const paragraphs = infoCell.querySelectorAll("p");
 
-  table.querySelectorAll("a").forEach((anchor) => {
-    anchor.setAttribute("href", normalizeWebsite(state.data.website));
-  });
+  replaceBrandArtwork(logoCell, infoCell);
 
   paragraphs[0].textContent = state.data.name.trim();
   paragraphs[1].textContent = state.data.title.trim();
@@ -260,8 +258,8 @@ function getSignatureHtml() {
   appendContactLine(document, paragraphs[2], state.data.addressLine1);
   appendContactLine(document, paragraphs[2], state.data.addressLine2);
   appendContactLine(document, paragraphs[2], state.data.phone);
-  appendLinkedContactLine(document, paragraphs[2], state.data.email, `mailto:${state.data.email.trim()}`);
-  appendLinkedContactLine(document, paragraphs[2], displayWebsite(state.data.website), normalizeWebsite(state.data.website));
+  appendContactLine(document, paragraphs[2], state.data.email);
+  appendContactLine(document, paragraphs[2], displayWebsite(state.data.website));
 
   if (state.variation === "compact" || state.variation === "minimal") {
     infoCell.querySelector("div")?.remove();
@@ -270,9 +268,9 @@ function getSignatureHtml() {
   if (state.variation === "minimal") {
     logoCell.setAttribute("style", "vertical-align:middle;padding:0;border-right:0;");
     infoCell.setAttribute("style", "vertical-align:middle;padding:0 0 0 20px;");
-    const logo = logoCell.querySelector("svg");
+    const logo = logoCell.querySelector("img");
     logo?.setAttribute("width", "52");
-    logo?.removeAttribute("height");
+    logo?.setAttribute("height", "48");
     logo?.setAttribute("style", "display:block;margin-right:20px;");
     paragraphs[0].setAttribute(
       "style",
@@ -287,22 +285,34 @@ function getSignatureHtml() {
   return table.outerHTML;
 }
 
+function replaceBrandArtwork(logoCell, infoCell) {
+  logoCell.textContent = "";
+  const logo = logoCell.ownerDocument.createElement("img");
+  logo.src = assetUrl("assets/avodah-lion.png");
+  logo.width = 70;
+  logo.height = 64;
+  logo.alt = "Avodah";
+  logo.setAttribute("style", "display:block;margin-right:32px;border:0;outline:none;text-decoration:none;");
+  logoCell.append(logo);
+
+  const wordmarkContainer = infoCell.querySelector("div");
+  if (!wordmarkContainer) return;
+
+  wordmarkContainer.textContent = "";
+  const wordmark = infoCell.ownerDocument.createElement("img");
+  wordmark.src = assetUrl("assets/avodah-wordmark.png");
+  wordmark.width = 110;
+  wordmark.height = 17;
+  wordmark.alt = "Avodah";
+  wordmark.setAttribute("style", "display:block;border:0;outline:none;text-decoration:none;");
+  wordmarkContainer.append(wordmark);
+}
+
 function appendContactLine(document, container, value) {
   const text = value.trim();
   if (!text) return;
   appendBreak(container);
   container.append(document.createTextNode(text));
-}
-
-function appendLinkedContactLine(document, container, label, href) {
-  const text = label.trim();
-  if (!text) return;
-  appendBreak(container);
-  const anchor = document.createElement("a");
-  anchor.href = href;
-  anchor.textContent = text;
-  anchor.setAttribute("style", "color:#2d1b22;text-decoration:none;");
-  container.append(anchor);
 }
 
 function appendBreak(container) {
@@ -351,6 +361,10 @@ function getExportFileName(name) {
     .replace(/^-|-$/g, "");
 
   return slug ? `avodah-${slug}-signature.html` : "avodah-signature.html";
+}
+
+function assetUrl(path) {
+  return new URL(path, window.location.href).href;
 }
 
 function normalizeWebsite(website) {
