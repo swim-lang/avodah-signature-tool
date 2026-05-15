@@ -14,7 +14,7 @@ Open the site, sign in with the shared Avodah credentials, edit the signature fi
 
 This project is plain HTML, CSS, and JavaScript. It can be hosted directly on GitHub Pages with no build step.
 
-The exported signature uses hosted PNG artwork instead of inline SVGs so Outlook is less likely to strip the Avodah mark when pasting.
+The exported signature uses hosted PNG artwork instead of inline SVGs so Outlook is less likely to strip the Avodah mark when pasting. The Avodah mark links to the configured website, so the signature does not need separate email or URL text lines.
 
 ## Note
 

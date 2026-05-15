@@ -26,8 +26,7 @@ const fields = [
   ["addressLine1", "Address line 1", "text"],
   ["addressLine2", "Address line 2", "text"],
   ["phone", "Phone", "text"],
-  ["email", "Email", "email"],
-  ["website", "Website", "url"],
+  ["website", "Logo link", "url"],
 ];
 
 const variations = [
@@ -258,8 +257,6 @@ function getSignatureHtml() {
   appendContactLine(document, paragraphs[2], state.data.addressLine1);
   appendContactLine(document, paragraphs[2], state.data.addressLine2);
   appendContactLine(document, paragraphs[2], state.data.phone);
-  appendContactLine(document, paragraphs[2], state.data.email);
-  appendContactLine(document, paragraphs[2], displayWebsite(state.data.website));
 
   if (state.variation === "compact" || state.variation === "minimal") {
     infoCell.querySelector("div")?.remove();
@@ -271,7 +268,7 @@ function getSignatureHtml() {
     const logo = logoCell.querySelector("img");
     logo?.setAttribute("width", "52");
     logo?.setAttribute("height", "48");
-    logo?.setAttribute("style", "display:block;margin-right:20px;");
+    logo?.setAttribute("style", "display:block;margin-right:14px;border:0;outline:none;text-decoration:none;");
     paragraphs[0].setAttribute(
       "style",
       "font-family:'Times New Roman',Times,serif;font-size:22px;font-weight:400;line-height:1.1;margin:0 0 2px 0;color:#2d1b22;letter-spacing:0.01em;",
@@ -287,13 +284,21 @@ function getSignatureHtml() {
 
 function replaceBrandArtwork(logoCell, infoCell) {
   logoCell.textContent = "";
+  const href = normalizeWebsite(state.data.website);
+  const logoLink = logoCell.ownerDocument.createElement("a");
+  logoLink.href = href;
+  logoLink.target = "_blank";
+  logoLink.rel = "noopener";
+  logoLink.setAttribute("style", "display:inline-block;text-decoration:none;border:0;outline:none;");
+
   const logo = logoCell.ownerDocument.createElement("img");
   logo.src = assetUrl("assets/avodah-lion.png");
   logo.width = 70;
   logo.height = 64;
   logo.alt = "Avodah";
-  logo.setAttribute("style", "display:block;margin-right:32px;border:0;outline:none;text-decoration:none;");
-  logoCell.append(logo);
+  logo.setAttribute("style", "display:block;margin-right:14px;border:0;outline:none;text-decoration:none;");
+  logoLink.append(logo);
+  logoCell.append(logoLink);
 
   const wordmarkContainer = infoCell.querySelector("div");
   if (!wordmarkContainer) return;
@@ -305,7 +310,13 @@ function replaceBrandArtwork(logoCell, infoCell) {
   wordmark.height = 17;
   wordmark.alt = "Avodah";
   wordmark.setAttribute("style", "display:block;border:0;outline:none;text-decoration:none;");
-  wordmarkContainer.append(wordmark);
+  const wordmarkLink = infoCell.ownerDocument.createElement("a");
+  wordmarkLink.href = href;
+  wordmarkLink.target = "_blank";
+  wordmarkLink.rel = "noopener";
+  wordmarkLink.setAttribute("style", "display:inline-block;text-decoration:none;border:0;outline:none;");
+  wordmarkLink.append(wordmark);
+  wordmarkContainer.append(wordmarkLink);
 }
 
 function appendContactLine(document, container, value) {
